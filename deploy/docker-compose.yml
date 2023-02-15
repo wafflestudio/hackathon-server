@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: hackathon:${HACKATHON_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    labels:
+      # Enables traefik for this container.
+    - traefik.enable=true
+    - traefik.http.routers.hackathon.rule=Host(`${HACKATHON_TRAEFIK_HOST:-hackathon.localhost}`)
+    - traefik.http.routers.hackathon.entrypoints=http
+    - traefik.http.routers.hackathon.service=hackathon
+    - traefik.http.services.hackathon.loadbalancer.server.port=${HACKATHON_PORT:-8000}
+    networks:
+    - default
+    - traefik-shared
+    environment:
+      HACKATHON_HOST: 0.0.0.0
+      HACKATHON_DB_FILE: /db_data/db.sqlite3
+    volumes:
+    - hackathon-db-data:/db_data/
+
+  migrator:
+    image: hackathon:${HACKATHON_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      HACKATHON_DB_FILE: /db_data/db.sqlite3
+    volumes:
+    - hackathon-db-data:/db_data/
+
+
+
+volumes:
+  hackathon-db-data:
+    name: hackathon-db-data
+
+networks:
+  # Network for traefik.
+  traefik-shared:
+    name: traefik-shared

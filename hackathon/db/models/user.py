@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import String
 
 from hackathon.db.base import Base
+
+if TYPE_CHECKING:
+    from hackathon.web.api.user.schema import UserBase
+
 from hackathon.db.models.team import Team
 
 users_positions = Table(
@@ -52,3 +58,15 @@ class User(Base):
         secondary=users_positions,
         back_populates="users",
     )
+
+    def to_pydantic(self) -> UserBase:
+        """Convert SQLAlchemy model to Pydantic model."""
+        from hackathon.web.api.user.schema import UserBase
+
+        return UserBase(
+            id=self.id,
+            username=self.username,
+            fullname=self.fullname,
+            team_id=self.team_id,
+            positions=[position.name for position in self.positions],
+        )

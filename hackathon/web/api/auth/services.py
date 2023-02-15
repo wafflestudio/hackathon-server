@@ -1,10 +1,14 @@
+from typing import TYPE_CHECKING
+
 import bcrypt
 from fastapi import Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
-from hackathon.db.models.user import User
 from hackathon.web.api.auth.repositories import AuthRepository
 from hackathon.web.api.auth.schema import *
+
+if TYPE_CHECKING:
+    from hackathon.web.api.user.schema import UserBase
 
 
 class AuthService:
@@ -54,11 +58,11 @@ class AuthService:
         else:
             raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    async def get_current_user(self, token: str) -> User:
+    async def get_current_user(self, token: str) -> "UserBase":
         user = await self.auth_repository.get_user_by_token(token)
         if not user:
             raise HTTPException(
                 status_code=401,
                 detail="Invalid authentication credentials",
             )
-        return user
+        return user.to_pydantic()

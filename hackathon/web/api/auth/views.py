@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter
 from fastapi.param_functions import Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from hackathon.web.api.auth.services import AuthService
+
+if TYPE_CHECKING:
+    from hackathon.web.api.user.schema import UserBase
 
 from .schema import *
 
@@ -44,5 +49,5 @@ async def login_for_access_token(
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     auth_service: AuthService = Depends(),
-):
+) -> "UserBase":
     return await auth_service.get_current_user(token)

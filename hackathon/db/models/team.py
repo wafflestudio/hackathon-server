@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from hackathon.db.base import Base
-from hackathon.db.models.user import User
+
+if TYPE_CHECKING:
+    from hackathon.db.models.user import User
 
 
 class Team(Base):

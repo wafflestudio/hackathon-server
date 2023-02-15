@@ -1,15 +1,15 @@
 """empty message
 
-Revision ID: 52dba3a851d7
+Revision ID: 1d2f85735fec
 Revises:
-Create Date: 2023-02-15 15:32:59.997583
+Create Date: 2023-02-15 23:10:04.473033
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "52dba3a851d7"
+revision = "1d2f85735fec"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,6 +28,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(length=10), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
     )
     op.create_table(
         "team",
@@ -43,12 +44,14 @@ def upgrade() -> None:
         sa.Column("username", sa.String(length=50), nullable=False),
         sa.Column("fullname", sa.String(length=20), nullable=False),
         sa.Column("hashed_password", sa.String(length=200), nullable=False),
+        sa.Column("token", sa.String(length=200), nullable=False),
         sa.Column("team_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["team_id"],
             ["team.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("username"),
     )
     op.create_table(
         "users_positions",

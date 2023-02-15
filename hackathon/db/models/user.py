@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import String
 
 from hackathon.db.base import Base
-
-if TYPE_CHECKING:
-    from hackathon.db.models.team import Team
+from hackathon.db.models.team import Team
 
 users_positions = Table(
     "users_positions",
@@ -25,7 +21,7 @@ class Position(Base):
     __tablename__ = "position"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(length=10))  # noqa: WPS432
+    name: Mapped[str] = mapped_column(String(length=10), unique=True)  # noqa: WPS432
 
     users: Mapped[list[User]] = relationship(
         secondary=users_positions,
@@ -40,9 +36,14 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    username: Mapped[str] = mapped_column(String(length=50))  # noqa: WPS432
+    username: Mapped[str] = mapped_column(
+        String(length=50),
+        unique=True,
+    )  # noqa: WPS432
     fullname: Mapped[str] = mapped_column(String(length=20))  # noqa: WPS432
     hashed_password: Mapped[str] = mapped_column(String(length=200))  # noqa: WPS432
+
+    token: Mapped[str] = mapped_column(String(length=200))  # noqa: WPS432
 
     team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
     team: Mapped[Team | None] = relationship(back_populates="members")

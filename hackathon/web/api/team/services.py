@@ -34,13 +34,13 @@ class TeamService:
         )
         return team.to_pydantic()
 
-    async def apply_to_team(self, team_id: int, user: UserBase) -> TeamOperationResult:
-        if user.applied_team_id:
-            raise HTTPException(
-                status_code=403,
-                detail="You are already in another team",
-            )
-        await self.team_repository.apply_team(team_id, user.id)
+    async def apply_to_team(
+        self,
+        team_id: int,
+        user: UserBase,
+        comment: str,
+    ) -> TeamOperationResult:
+        await self.team_repository.apply_team(team_id, user.id, comment)
         return TeamOperationResult(success=True)
 
     async def cancel_application(

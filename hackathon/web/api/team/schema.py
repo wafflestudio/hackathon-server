@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from __future__ import annotations
 
-from hackathon.web.api.user.schema import UserBase
+from pydantic import BaseModel
 
 
 class TeamBase(BaseModel):
@@ -9,7 +9,7 @@ class TeamBase(BaseModel):
     resolution: str
     maxMembers: int
     members: list[UserBase]
-    applicants: list[UserBase]
+    applications: list[TeamApplicationBase]
 
 
 class TeamList(TeamBase):
@@ -29,3 +29,16 @@ class TeamApplyRequest(BaseModel):
 
 class TeamOperationResult(BaseModel):
     success: bool
+
+
+class TeamApplicationBase(BaseModel):
+    id: int
+    comment: str
+    user: UserBase
+    team: TeamBase
+
+
+from hackathon.web.api.user.schema import UserBase
+
+TeamBase.update_forward_refs()
+TeamApplicationBase.update_forward_refs()

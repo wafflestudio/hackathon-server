@@ -11,7 +11,7 @@ from hackathon.db.base import Base
 if TYPE_CHECKING:
     from hackathon.web.api.user.schema import UserBase
 
-from hackathon.db.models.team import Team
+from hackathon.db.models.team import Team, TeamApplication
 
 users_positions = Table(
     "users_positions",
@@ -54,8 +54,10 @@ class User(Base):
     team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
     team: Mapped[Team | None] = relationship(back_populates="members")
 
-    applied_team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
-    applied_team: Mapped[Team | None] = relationship(back_populates="applicants")
+    team_applications: Mapped[list[TeamApplication]] = relationship(
+        back_populates="team",
+        cascade="all, delete",
+    )
 
     positions: Mapped[list[Position]] = relationship(
         secondary=users_positions,
@@ -71,6 +73,8 @@ class User(Base):
             username=self.username,
             fullname=self.fullname,
             team_id=self.team_id,
-            applied_team_id=self.applied_team_id,
+            applications=[
+                application.to_pydantic() for application in self.team_applications
+            ],
             positions=[position.name for position in self.positions],
         )

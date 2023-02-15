@@ -54,6 +54,9 @@ class User(Base):
     team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
     team: Mapped[Team | None] = relationship(back_populates="members")
 
+    applied_team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
+    applied_team: Mapped[Team | None] = relationship(back_populates="applicants")
+
     positions: Mapped[list[Position]] = relationship(
         secondary=users_positions,
         back_populates="users",
@@ -68,5 +71,6 @@ class User(Base):
             username=self.username,
             fullname=self.fullname,
             team_id=self.team_id,
+            applied_team_id=self.applied_team_id,
             positions=[position.name for position in self.positions],
         )

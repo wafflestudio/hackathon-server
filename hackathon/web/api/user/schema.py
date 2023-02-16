@@ -15,6 +15,6 @@ class UserList(UserBase):
     users: list[UserBase]
 
 
-from hackathon.web.api.team.schema import TeamApplicationBase
-
-UserBase.update_forward_refs()
+class PositionBase(BaseModel):
+    id: int
+    name: str

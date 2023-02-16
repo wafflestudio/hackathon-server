@@ -19,7 +19,12 @@ class AuthService:
 
     async def sign_up(self, data: SignUpRequest) -> SignInResponse:
         try:
-            await self.auth_repository.add_user(**data.dict())
+            await self.auth_repository.add_user(
+                username=data.username,
+                password=data.password,
+                fullname=data.fullname,
+                positions=data.positions,
+            )
         except IntegrityError:
             raise HTTPException(status_code=409, detail="Username already exists")
 

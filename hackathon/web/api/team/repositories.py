@@ -67,12 +67,14 @@ class TeamRepository:
         ).scalar_one_or_none()
 
     async def apply_team(self, team_id: int, user_id: int, comment: str) -> None:
+        self.session.add(
+            TeamApplication(team_id=team_id, user_id=user_id, comment=comment),
+        )
         try:
-            self.session.add(
-                TeamApplication(team_id=team_id, user_id=user_id, comment=comment),
-            )
+            await self.session.commit()
         except IntegrityError:
-            raise HTTPException(status_code=400, detail="User already applied")
+            await self.session.rollback()
+            raise HTTPException(status_code=409, detail="User already applied")
 
     async def cancel_application(self, team_id: int, user_id: int) -> None:
         application = (
@@ -88,7 +90,9 @@ class TeamRepository:
 
     async def accept_user(self, team_id: int, user_id: int) -> None:
         await self.cancel_application(team_id, user_id)
-        team = await self.session.execute(select(Team).where(Team.id == team_id))
+        team = await self.session.execute(
+            select(Team).where(Team.id == team_id).options(selectinload(Team.members))
+        )
         team = team.scalar_one_or_none()
         if not team:
             raise HTTPException(status_code=404, detail="Team not found")
@@ -96,12 +100,12 @@ class TeamRepository:
         user = user.scalar_one_or_none()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        if user in team.members:
-            raise HTTPException(status_code=400, detail="User already in team")
         team.members.append(user)
 
     async def leave_team(self, team_id: int, user_id: int) -> None:
-        team = await self.session.execute(select(Team).where(Team.id == team_id))
+        team = await self.session.execute(
+            select(Team).where(Team.id == team_id).options(selectinload(Team.members))
+        )
         team = team.scalar_one_or_none()
         if not team:
             raise HTTPException(status_code=404, detail="Team not found")

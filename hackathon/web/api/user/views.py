@@ -22,3 +22,10 @@ async def get_users(
     user_service: UserService = Depends(),
 ) -> list[UserBase]:
     return await user_service.get_users()
+
+
+@router.get("/positions")
+async def get_positions(
+    user_service: UserService = Depends(),
+) -> list[PositionBase]:
+    return await user_service.get_positions()

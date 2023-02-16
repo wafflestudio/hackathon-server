@@ -70,6 +70,6 @@ class TeamApplication(Base):
         return TeamApplicationBase(
             id=self.id,
             comment=self.comment,
-            user=self.user.to_pydantic(),
-            team=self.team.to_pydantic(),
+            user_id=self.user_id,
+            team_id=self.team_id,
         )

@@ -10,11 +10,12 @@ from hackathon.web.api.auth.repositories import AuthRepository
 from hackathon.web.api.auth.schema import *
 from hackathon.web.api.auth.services import AuthService
 from hackathon.web.api.user.repositories import UserRepository
+from hackathon.web.api.user.schema import UserBase
 from hackathon.web.api.user.services import UserService
 
 
 @pytest.mark.anyio
-async def test_sign_up_in(dbsession: AsyncSession) -> None:
+async def test_sign_up_in(dbsession: AsyncSession) -> UserBase:
     """Tests dummy instance creation."""
     auth_repository = AuthRepository(dbsession)
     user_repository = UserRepository(dbsession)
@@ -27,7 +28,7 @@ async def test_sign_up_in(dbsession: AsyncSession) -> None:
             fullname=uuid.uuid4().hex,
             username=username,
             password=password,
-            positions=[],  # TODO: impl position
+            positions=(positions := ["백엔드", "iOS"]),
         )
     )
     response = await auth_service.sign_in(
@@ -41,6 +42,34 @@ async def test_sign_up_in(dbsession: AsyncSession) -> None:
 
     user = await user_service.get_user_by_id(response.user.id)
     assert user.username == username
+    assert set(positions).issubset(set(user.positions))
+    return user
+
+
+# @pytest.mark.anyio
+# async def test_duplicate_username(dbsession: AsyncSession) -> None:
+#     """Tests dummy instance creation."""
+#     auth_repository = AuthRepository(dbsession)
+#     auth_service = AuthService(auth_repository)
+#     username = uuid.uuid4().hex
+#     password = uuid.uuid4().hex
+#     await auth_service.sign_up(
+#         data=SignUpRequest(
+#             fullname=uuid.uuid4().hex,
+#             username=username,
+#             password=password,
+#             positions=["백엔드", "iOS"],
+#         )
+#     )
+#     with pytest.raises(HTTPException):
+#         await auth_service.sign_up(
+#             data=SignUpRequest(
+#                 fullname=uuid.uuid4().hex,
+#                 username=username,
+#                 password=password,
+#                 positions=["백엔드", "iOS"],
+#             )
+#         )
 
 
 @pytest.mark.anyio
@@ -55,7 +84,7 @@ async def test_sign_up_in_fail(dbsession: AsyncSession) -> None:
             fullname=uuid.uuid4().hex,
             username=username,
             password=password,
-            positions=[],  # TODO: impl position
+            positions=["백엔드", "iOS"],
         )
     )
     with pytest.raises(HTTPException):

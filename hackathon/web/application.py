@@ -2,7 +2,7 @@ from importlib import metadata
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import UJSONResponse
+from fastapi.responses import JSONResponse, UJSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from hackathon.web.api.router import api_router

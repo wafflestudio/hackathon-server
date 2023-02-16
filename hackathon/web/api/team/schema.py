@@ -33,8 +33,8 @@ class TeamOperationResult(BaseModel):
 class TeamApplicationBase(BaseModel):
     id: int
     comment: str
-    user: UserBase
-    team: TeamBase
+    user_id: int
+    team_id: int
 
 
 from hackathon.web.api.user.schema import UserBase

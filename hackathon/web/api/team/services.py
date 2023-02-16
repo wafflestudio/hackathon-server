@@ -36,6 +36,10 @@ class TeamService:
             resolution=data.resolution,
             max_members=data.maxMembers,
         )
+        if not (1 < data.maxMembers <= 4):
+            raise HTTPException(
+                status_code=400, detail="Max members must be between 2 and 4"
+            )
         if not team:
             raise HTTPException(status_code=400, detail="Team creation failed")
         return team.to_pydantic()

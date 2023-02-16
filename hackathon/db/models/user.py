@@ -55,7 +55,7 @@ class User(Base):
     team: Mapped[Team | None] = relationship(back_populates="members")
 
     team_applications: Mapped[list[TeamApplication]] = relationship(
-        back_populates="team",
+        back_populates="user",
         cascade="all, delete",
     )
 

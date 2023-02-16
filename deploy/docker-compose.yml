@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.11.1"
 
 services:
   api:
@@ -25,6 +25,15 @@ services:
     volumes:
     - hackathon-db-data:/db_data/
 
+  traefik:
+    image: traefik:v2.6
+    ports:
+    - "80:80"
+    - "8000:8000"
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    - "$PWD/deploy/traefik/traefik.dev.toml:/etc/traefik/traefik.toml"
+
   migrator:
     image: hackathon:${HACKATHON_VERSION:-latest}
     restart: "no"
@@ -33,8 +42,6 @@ services:
       HACKATHON_DB_FILE: /db_data/db.sqlite3
     volumes:
     - hackathon-db-data:/db_data/
-
-
 
 volumes:
   hackathon-db-data:

@@ -9,7 +9,6 @@ class UserBase(BaseModel):
     username: str
     positions: list[str]
     team_id: int | None
-    applications: list[TeamApplicationBase]
 
 
 class UserList(UserBase):

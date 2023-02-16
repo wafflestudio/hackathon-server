@@ -1,7 +1,11 @@
 from fastapi import Depends, HTTPException
 
 from hackathon.web.api.team.repositories import TeamRepository
-from hackathon.web.api.team.schema import TeamBase, TeamCreate, TeamOperationResult
+from hackathon.web.api.team.schema import (
+    TeamBase,
+    TeamCreateRequest,
+    TeamOperationResult,
+)
 from hackathon.web.api.user.repositories import UserRepository
 from hackathon.web.api.user.schema import UserBase
 
@@ -25,13 +29,15 @@ class TeamService:
         teams = await self.team_repository.get_teams()
         return [team.to_pydantic() for team in teams]
 
-    async def create_team(self, data: TeamCreate, user: UserBase) -> TeamBase:
+    async def create_team(self, data: TeamCreateRequest, user: UserBase) -> TeamBase:
         team = await self.team_repository.create_team(
             name=data.name,
             user_id=user.id,
             resolution=data.resolution,
             max_members=data.maxMembers,
         )
+        if not team:
+            raise HTTPException(status_code=400, detail="Team creation failed")
         return team.to_pydantic()
 
     async def apply_to_team(

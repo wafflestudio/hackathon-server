@@ -27,7 +27,7 @@ async def get_team(
 
 @router.post("/")
 async def create_team(
-    data: TeamCreate,
+    data: TeamCreateRequest,
     user: UserBase = Depends(get_current_user),
     team_service: TeamService = Depends(),
 ) -> TeamBase:

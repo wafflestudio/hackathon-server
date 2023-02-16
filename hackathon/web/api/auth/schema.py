@@ -15,6 +15,7 @@ class SignInRequest(BaseModel):
 
 class SignInResponse(BaseModel):
     class UserAttributes(BaseModel):
+        id: int
         fullname: str
         username: str
         position: list[str]

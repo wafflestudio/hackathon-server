@@ -8,7 +8,7 @@ class TeamBase(BaseModel):
     name: str
     resolution: str
     maxMembers: int
-    members: list[UserBase]
+    members: list[int]
     applications: list[TeamApplicationBase]
 
 
@@ -16,11 +16,10 @@ class TeamList(TeamBase):
     teams: list[TeamBase]
 
 
-class TeamCreate(BaseModel):
+class TeamCreateRequest(BaseModel):
     name: str
     resolution: str
     maxMembers: int
-    members: list[int] | None
 
 
 class TeamApplyRequest(BaseModel):

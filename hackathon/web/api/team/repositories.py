@@ -32,7 +32,10 @@ class TeamRepository:
 
     async def is_user_in_team(self, user_id: int, team_id: int) -> bool:
         team = await self.session.execute(
-            select(Team).where(Team.id == team_id).options(selectinload(Team.members)),
+            select(Team)
+            .where(Team.id == team_id)
+            .options(selectinload(Team.members))
+            .options(selectinload(Team.team_applications)),
         )
         team = team.scalar_one_or_none()
         if not team:
@@ -45,7 +48,7 @@ class TeamRepository:
         user_id: int,
         resolution: str,
         max_members: int,
-    ) -> Team:
+    ) -> Team | None:
         team = Team(name=name, resolution=resolution, max_members=max_members)
         owner = (
             await self.session.execute(select(User).where(User.id == user_id))
@@ -53,7 +56,15 @@ class TeamRepository:
         if owner:
             team.members.append(owner)
         self.session.add(team)
-        return team
+        await self.session.commit()  # commit the changes to the database
+        return (
+            await self.session.execute(
+                select(Team)
+                .where(Team.id == team.id)
+                .options(selectinload(Team.members))
+                .options(selectinload(Team.team_applications)),
+            )
+        ).scalar_one_or_none()
 
     async def apply_team(self, team_id: int, user_id: int, comment: str) -> None:
         try:

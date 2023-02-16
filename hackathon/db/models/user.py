@@ -73,8 +73,5 @@ class User(Base):
             username=self.username,
             fullname=self.fullname,
             team_id=self.team_id,
-            applications=[
-                application.to_pydantic() for application in self.team_applications
-            ],
             positions=[position.name for position in self.positions],
         )

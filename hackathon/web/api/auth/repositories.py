@@ -48,7 +48,9 @@ class AuthRepository:
         user = await self.session.execute(
             select(User)
             .where(User.username == username)
-            .options(selectinload(User.positions)),
+            .options(selectinload(User.positions))
+            .options(selectinload(User.team))
+            .options(selectinload(User.team_applications))
         )
         return user.scalar_one_or_none()
 
@@ -56,6 +58,8 @@ class AuthRepository:
         user = await self.session.execute(
             select(User)
             .where(User.token == token)
-            .options(selectinload(User.positions)),
+            .options(selectinload(User.positions))
+            .options(selectinload(User.team))
+            .options(selectinload(User.team_applications))
         )
         return user.scalar_one_or_none()

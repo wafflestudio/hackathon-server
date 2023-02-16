@@ -39,7 +39,7 @@ class Team(Base):
             name=self.name,
             resolution=self.resolution,
             maxMembers=self.max_members,
-            members=[member.to_pydantic() for member in self.members],
+            members=[member.id for member in self.members],
             applications=[
                 application.to_pydantic() for application in self.team_applications
             ],

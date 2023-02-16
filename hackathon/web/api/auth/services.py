@@ -30,6 +30,7 @@ class AuthService:
         return SignInResponse(
             token=user.token,
             user=SignInResponse.UserAttributes(
+                id=user.id,
                 fullname=user.fullname,
                 username=user.username,
                 position=[position.name for position in user.positions],
@@ -49,6 +50,7 @@ class AuthService:
             return SignInResponse(
                 token=user.token,
                 user=SignInResponse.UserAttributes(
+                    id=user.id,
                     fullname=user.fullname,
                     username=user.username,
                     position=[position.name for position in user.positions],

@@ -21,7 +21,12 @@ class UserRepository:
         return user.scalar_one_or_none()
 
     async def get_users(self) -> list[User]:
-        users = await self.session.execute(select(User))
+        users = await self.session.execute(
+            select(User)
+            .options(selectinload(User.positions))
+            .options(selectinload(User.team))
+            .options(selectinload(User.team_applications))
+        )
         return list(users.scalars().all())
 
     async def get_positions(self) -> list[Position]:

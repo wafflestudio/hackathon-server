@@ -1,7 +1,18 @@
-version: "3.11.1"
+version: "3"
 
 services:
+  nginx:
+    image: nginx:1.21.5-alpine
+    ports:
+    - 80:80
+    volumes:
+    - ./deploy/nginx.conf:/etc/nginx/nginx.conf
+    container_name: hackthon-proxy
+    networks:
+    - backend
+
   api:
+    container_name: hackathon-api
     build:
       context: .
       dockerfile: ./deploy/Dockerfile
@@ -9,30 +20,15 @@ services:
     restart: always
     env_file:
     - .env
-    labels:
-      # Enables traefik for this container.
-    - traefik.enable=true
-    - traefik.http.routers.hackathon.rule=Host(`${HACKATHON_TRAEFIK_HOST:-hackathon.localhost}`)
-    - traefik.http.routers.hackathon.entrypoints=http
-    - traefik.http.routers.hackathon.service=hackathon
-    - traefik.http.services.hackathon.loadbalancer.server.port=${HACKATHON_PORT:-8000}
     networks:
-    - default
-    - traefik-shared
+    - backend
+    expose:
+    - 8000
     environment:
       HACKATHON_HOST: 0.0.0.0
       HACKATHON_DB_FILE: /db_data/db.sqlite3
     volumes:
     - hackathon-db-data:/db_data/
-
-  traefik:
-    image: traefik:v2.6
-    ports:
-    - "80:80"
-    - "8000:8000"
-    volumes:
-    - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    - "$PWD/deploy/traefik/traefik.dev.toml:/etc/traefik/traefik.toml"
 
   migrator:
     image: hackathon:${HACKATHON_VERSION:-latest}
@@ -48,6 +44,5 @@ volumes:
     name: hackathon-db-data
 
 networks:
-  # Network for traefik.
-  traefik-shared:
-    name: traefik-shared
+  backend:
+    driver: bridge

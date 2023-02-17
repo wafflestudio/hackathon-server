@@ -12,6 +12,10 @@ class TeamBase(BaseModel):
     applications: list[TeamApplicationBase]
 
 
+class TeamDetail(TeamBase):
+    members: list[UserBase]
+
+
 class TeamList(TeamBase):
     teams: list[TeamBase]
 
@@ -41,3 +45,4 @@ from hackathon.web.api.user.schema import UserBase
 
 TeamBase.update_forward_refs()
 TeamApplicationBase.update_forward_refs()
+TeamDetail.update_forward_refs()

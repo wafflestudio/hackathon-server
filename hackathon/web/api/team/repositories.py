@@ -25,7 +25,7 @@ class TeamRepository:
         team = await self.session.execute(
             select(Team)
             .where(Team.id == id)
-            .options(selectinload(Team.members))
+            .options(selectinload(Team.members).joinedload(User.positions))
             .options(selectinload(Team.team_applications)),
         )
         return team.scalar_one_or_none()
@@ -61,7 +61,7 @@ class TeamRepository:
             await self.session.execute(
                 select(Team)
                 .where(Team.id == team.id)
-                .options(selectinload(Team.members))
+                .options(selectinload(Team.members).joinedload(User.positions))
                 .options(selectinload(Team.team_applications)),
             )
         ).scalar_one_or_none()

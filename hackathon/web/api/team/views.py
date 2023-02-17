@@ -21,7 +21,7 @@ async def get_team(
     team_id: int,
     user: UserBase = Depends(get_current_user),
     team_service: TeamService = Depends(),
-) -> TeamBase:
+) -> TeamDetail:
     return await team_service.get_team_by_id(team_id)
 
 
@@ -30,7 +30,7 @@ async def create_team(
     data: TeamCreateRequest,
     user: UserBase = Depends(get_current_user),
     team_service: TeamService = Depends(),
-) -> TeamBase:
+) -> TeamDetail:
     return await team_service.create_team(data, user)
 
 

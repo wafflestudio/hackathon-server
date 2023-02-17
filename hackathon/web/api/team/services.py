@@ -4,6 +4,7 @@ from hackathon.web.api.team.repositories import TeamRepository
 from hackathon.web.api.team.schema import (
     TeamBase,
     TeamCreateRequest,
+    TeamDetail,
     TeamOperationResult,
 )
 from hackathon.web.api.user.repositories import UserRepository
@@ -19,17 +20,35 @@ class TeamService:
         self.user_repository = user_repository
         self.team_repository = team_repository
 
-    async def get_team_by_id(self, team_id: int) -> TeamBase:
+    async def get_team_by_id(self, team_id: int) -> TeamDetail:
         team = await self.team_repository.get_team_by_id(team_id)
         if not team:
             raise HTTPException(status_code=404, detail="Team not found")
-        return team.to_pydantic()
+        return TeamDetail(
+            id=team.id,
+            name=team.name,
+            resolution=team.resolution,
+            maxMembers=team.max_members,
+            members=[
+                UserBase(
+                    id=member.id,
+                    username=member.username,
+                    fullname=member.fullname,
+                    positions=[position.name for position in member.positions],
+                    team_id=member.team_id,
+                )
+                for member in team.members
+            ],
+            applications=[
+                application.to_pydantic() for application in team.team_applications
+            ],
+        )
 
     async def get_teams(self) -> list[TeamBase]:
         teams = await self.team_repository.get_teams()
         return [team.to_pydantic() for team in teams]
 
-    async def create_team(self, data: TeamCreateRequest, user: UserBase) -> TeamBase:
+    async def create_team(self, data: TeamCreateRequest, user: UserBase) -> TeamDetail:
         team = await self.team_repository.create_team(
             name=data.name,
             user_id=user.id,
@@ -42,7 +61,25 @@ class TeamService:
             )
         if not team:
             raise HTTPException(status_code=400, detail="Team creation failed")
-        return team.to_pydantic()
+        return TeamDetail(
+            id=team.id,
+            name=team.name,
+            resolution=team.resolution,
+            maxMembers=team.max_members,
+            members=[
+                UserBase(
+                    id=member.id,
+                    username=member.username,
+                    fullname=member.fullname,
+                    positions=[position.name for position in member.positions],
+                    team_id=member.team_id,
+                )
+                for member in team.members
+            ],
+            applications=[
+                application.to_pydantic() for application in team.team_applications
+            ],
+        )
 
     async def apply_to_team(
         self,

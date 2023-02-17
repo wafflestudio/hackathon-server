@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException
 
 from hackathon.web.api.team.repositories import TeamRepository
 from hackathon.web.api.team.schema import (
+    TeamApplicationBase,
     TeamBase,
     TeamCreateRequest,
     TeamDetail,
@@ -40,7 +41,21 @@ class TeamService:
                 for member in team.members
             ],
             applications=[
-                application.to_pydantic() for application in team.team_applications
+                TeamApplicationBase(
+                    id=application.id,
+                    comment=application.comment,
+                    team_id=application.team_id,
+                    user=UserBase(
+                        id=application.user.id,
+                        username=application.user.username,
+                        fullname=application.user.fullname,
+                        positions=[
+                            position.name for position in application.user.positions
+                        ],
+                        team_id=application.user.team_id,
+                    ),
+                )
+                for application in team.team_applications
             ],
         )
 
@@ -77,7 +92,21 @@ class TeamService:
                 for member in team.members
             ],
             applications=[
-                application.to_pydantic() for application in team.team_applications
+                TeamApplicationBase(
+                    id=application.id,
+                    comment=application.comment,
+                    team_id=application.team_id,
+                    user=UserBase(
+                        id=application.user.id,
+                        username=application.user.username,
+                        fullname=application.user.fullname,
+                        positions=[
+                            position.name for position in application.user.positions
+                        ],
+                        team_id=application.user.team_id,
+                    ),
+                )
+                for application in team.team_applications
             ],
         )
 

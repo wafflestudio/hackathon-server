@@ -40,9 +40,6 @@ class Team(Base):
             resolution=self.resolution,
             maxMembers=self.max_members,
             members=[member.id for member in self.members],
-            applications=[
-                application.to_pydantic() for application in self.team_applications
-            ],
         )
 
 
@@ -62,14 +59,3 @@ class TeamApplication(Base):
     team: Mapped[Team] = relationship(back_populates="team_applications")
 
     __table_args__ = (UniqueConstraint("user_id", "team_id"),)
-
-    def to_pydantic(self) -> TeamApplicationBase:
-        """Convert SQLAlchemy model to Pydantic model."""
-        from hackathon.web.api.team.schema import TeamApplicationBase
-
-        return TeamApplicationBase(
-            id=self.id,
-            comment=self.comment,
-            user_id=self.user_id,
-            team_id=self.team_id,
-        )

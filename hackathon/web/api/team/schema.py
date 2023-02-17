@@ -9,11 +9,11 @@ class TeamBase(BaseModel):
     resolution: str
     maxMembers: int
     members: list[int]
-    applications: list[TeamApplicationBase]
 
 
 class TeamDetail(TeamBase):
     members: list[UserBase]
+    applications: list[TeamApplicationBase]
 
 
 class TeamList(TeamBase):
@@ -37,7 +37,7 @@ class TeamOperationResult(BaseModel):
 class TeamApplicationBase(BaseModel):
     id: int
     comment: str
-    user_id: int
+    user: UserBase
     team_id: int
 
 

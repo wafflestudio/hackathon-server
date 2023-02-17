@@ -26,7 +26,11 @@ class TeamRepository:
             select(Team)
             .where(Team.id == id)
             .options(selectinload(Team.members).joinedload(User.positions))
-            .options(selectinload(Team.team_applications)),
+            .options(
+                selectinload(Team.team_applications)
+                .joinedload(TeamApplication.user)
+                .joinedload(User.positions)
+            ),
         )
         return team.scalar_one_or_none()
 
@@ -62,7 +66,11 @@ class TeamRepository:
                 select(Team)
                 .where(Team.id == team.id)
                 .options(selectinload(Team.members).joinedload(User.positions))
-                .options(selectinload(Team.team_applications)),
+                .options(
+                    selectinload(Team.team_applications)
+                    .joinedload(TeamApplication.user)
+                    .joinedload(User.positions)
+                )
             )
         ).scalar_one_or_none()
 

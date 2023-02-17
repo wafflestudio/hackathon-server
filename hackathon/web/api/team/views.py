@@ -37,11 +37,11 @@ async def create_team(
 @router.post("/{team_id}/apply")
 async def apply_to_team(
     team_id: int,
-    # data: TeamApplyRequest,
+    data: TeamApplyRequest,
     user: UserBase = Depends(get_current_user),
     team_service: TeamService = Depends(),
 ):
-    return await team_service.apply_to_team(team_id, user, "")
+    return await team_service.apply_to_team(team_id, user, data.comment)
 
 
 @router.delete("/{team_id}/apply")

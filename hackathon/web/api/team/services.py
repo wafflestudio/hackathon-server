@@ -169,3 +169,7 @@ class TeamService:
             raise HTTPException(status_code=403, detail="You are not in this team")
         await self.team_repository.leave_team(team_id, user_id)
         return TeamOperationResult(success=True)
+
+    async def delete_team(self, team_id: int) -> TeamOperationResult:
+        await self.team_repository.delete_team(team_id)
+        return TeamOperationResult(success=True)

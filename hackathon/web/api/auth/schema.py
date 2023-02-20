@@ -6,6 +6,7 @@ class SignUpRequest(BaseModel):
     username: str
     password: str
     positions: list[str]
+    is_tester: bool = False
 
 
 class SignInRequest(BaseModel):

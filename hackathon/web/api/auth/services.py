@@ -24,6 +24,7 @@ class AuthService:
                 password=data.password,
                 fullname=data.fullname,
                 positions=data.positions,
+                is_tester=data.is_tester,
             )
         except IntegrityError:
             raise HTTPException(status_code=409, detail="Username already exists")

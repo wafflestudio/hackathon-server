@@ -24,6 +24,7 @@ class AuthRepository:
         fullname: str,
         password: str,
         positions: list[str],
+        is_tester: bool = False,
     ) -> None:
         await self.add_positions(positions)
         position_models = await self.session.execute(
@@ -44,6 +45,7 @@ class AuthRepository:
             User(
                 username=username,
                 fullname=fullname,
+                is_tester=is_tester,
                 hashed_password=str(hashed_password, "utf-8"),
                 token=str(token, "utf-8"),
                 positions=position_models.scalars().all(),

@@ -64,6 +64,11 @@ class TeamService:
         return [team.to_pydantic() for team in teams]
 
     async def create_team(self, data: TeamCreateRequest, user: UserBase) -> TeamDetail:
+        if (
+            user_model := await self.user_repository.get_user_by_id(user.id)
+        ) and user_model.is_tester:
+            raise HTTPException(status_code=400, detail="Testers can't create team")
+
         team = await self.team_repository.create_team(
             name=data.name,
             user_id=user.id,
@@ -116,6 +121,11 @@ class TeamService:
         user: UserBase,
         comment: str,
     ) -> TeamOperationResult:
+        user_model = await self.user_repository.get_user_by_id(user.id)
+        if user_model and user_model.is_tester:
+            raise HTTPException(
+                status_code=400, detail="Testers can't apply for a team."
+            )
         await self.team_repository.apply_team(team_id, user.id, comment)
         return TeamOperationResult(success=True)
 

@@ -92,19 +92,19 @@ async def kick_user(
     return await team_service.kick_user(team_id, user_id, user)
 
 
-@router.delete("/")
-async def delete_teams(
-    team_service: TeamService = Depends(),
-):
-    teams = await team_service.get_teams()
-    for team in teams:
-        await team_service.delete_team(team.id)
-    return {"message": "All teams deleted"}
+# @router.delete("/")
+# async def delete_teams(
+#     team_service: TeamService = Depends(),
+# ):
+#     teams = await team_service.get_teams()
+#     for team in teams:
+#         await team_service.delete_team(team.id)
+#     return {"message": "All teams deleted"}
 
 
-@router.delete("/{team_id}")
-async def delete_team(
-    team_id: int,
-    team_service: TeamService = Depends(),
-):
-    return await team_service.delete_team(team_id)
+# @router.delete("/{team_id}")
+# async def delete_team(
+#     team_id: int,
+#     team_service: TeamService = Depends(),
+# ):
+#     return await team_service.delete_team(team_id)

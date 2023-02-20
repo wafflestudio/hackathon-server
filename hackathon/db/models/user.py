@@ -11,6 +11,8 @@ from hackathon.db.base import Base
 if TYPE_CHECKING:
     from hackathon.web.api.user.schema import UserBase
 
+from sqlalchemy.sql import false
+
 from hackathon.db.models.team import Team, TeamApplication
 
 users_positions = Table(
@@ -53,6 +55,8 @@ class User(Base):
 
     team_id: Mapped[int | None] = mapped_column(ForeignKey("team.id"))
     team: Mapped[Team | None] = relationship(back_populates="members")
+
+    is_tester: Mapped[bool] = mapped_column(server_default=false())
 
     team_applications: Mapped[list[TeamApplication]] = relationship(
         back_populates="user",
